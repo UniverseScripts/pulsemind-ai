@@ -23,11 +23,8 @@ DATA_STAGES = [
     ("cohort (strict)", s01_cohort_strict),
     ("cache -- THE ONLY 42 GB SCAN", s03_extract_cache),
     ("cohort (final)", s04_cohort_final),
-    # AFTER s04, not before it. Table 1 must be built on the same cohort every
-    # later stage uses: when it ran second, against the strict cohort, the
-    # 7,423 admissions s04 adds arrived at the model matrix with all 33 static
-    # features NULL -- and that null pattern identified the cohort arm exactly,
-    # handing the model a stratum flag it had no business seeing.
+    # AFTER s04, not before it -- Table 1 must be built on the same cohort
+    # every later stage uses. Why, in `s02_table1_static.py`'s docstring.
     ("Table 1 -- patient background", s02_table1_static),
     ("Table 2 -- pivot", s05_pivot),
     ("splits (before imputation, on purpose)", s06_split),

@@ -5,17 +5,13 @@ Reproduces the design of cleaning_and_filling_mising_values_claude.ipynb exactly
 `df.at[i, col]` loops (~880k scalar lookups per function at 40k rows) with whole
 column operations. That is what makes 4.2M rows tractable.
 
-Two corrections carried over from the original:
+Two properties that are load-bearing rather than incidental:
   1. Reference fill values come from the TRAINING patients only and are written
      to disk, so the test split never contributes to them.
-  2. The target column survives. The original's final `result[ordered]` reorder
-     silently dropped `warning`, which is why the training notebook had to
-     re-read the raw CSV to get it back.
-
-One deliberate semantic change: the original reports a reading's age relative to
-the PREVIOUS observation, so a freshly measured row still shows a non-zero age.
-Here `_delta_t_min` is the age of the value actually in use -- zero when the row
-was measured. That is the quantity a model can act on.
+  2. ⚠️ `_delta_t_min` is the age of the value actually IN USE -- zero on a row
+     that was measured -- not the gap since the previous observation. That is the
+     quantity a model can act on, and it is why this column does not reproduce
+     the original notebook's while the other 44 do.
 """
 from __future__ import annotations
 

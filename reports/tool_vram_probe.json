@@ -1,0 +1,421 @@
+{
+  "measured": "2026-09-07",
+  "what": "Free VRAM sampled from nvidia-smi at 5 Hz across a 7B NF4 load and one generation. peak = free_before - min(free) during the load window.",
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "quantisation": "nf4",
+  "arms": {
+    "embed_cpu": {
+      "tag": "embed_cpu",
+      "embed_device": "cpu",
+      "model": "Qwen/Qwen2.5-7B-Instruct",
+      "quantisation": "nf4",
+      "n_ok": 3,
+      "n_failed": 0,
+      "peak_mib": {
+        "max": 6239,
+        "min": 6059,
+        "median": 6171,
+        "spread": 180
+      },
+      "resident_mib": {
+        "max": 6109,
+        "min": 5929,
+        "spread": 180
+      },
+      "text_sha256": [
+        "357abf7bae1264961e09a99ae49c69c838ce7195667b40411d057bf7b4080f8a"
+      ],
+      "deterministic": true,
+      "gate_now_mib": 6700,
+      "runs": [
+        {
+          "free_before_mib": 6795,
+          "free_after_load_mib": 866,
+          "free_after_generate_mib": 770,
+          "total_mib": 8151,
+          "vram_source": "nvidia-smi",
+          "resident_mib": 5929,
+          "load_seconds": 16.7,
+          "generate_seconds": 14.4,
+          "torch": {
+            "max_allocated_mib": 5739,
+            "max_reserved_mib": 6050
+          },
+          "placement": {
+            "embed_device": "cpu",
+            "embed_dtype": "torch.float16",
+            "embed_mib": 1040
+          },
+          "text_sha256": "357abf7bae1264961e09a99ae49c69c838ce7195667b40411d057bf7b4080f8a",
+          "text_chars": 723,
+          "provenance": {
+            "model": "Qwen/Qwen2.5-7B-Instruct",
+            "revision": "main",
+            "quantisation": "nf4",
+            "dtype": "torch.float16",
+            "device": "cuda:0",
+            "embed_device": "cpu",
+            "compute_capability": "sm_120",
+            "max_new_tokens": 220,
+            "seed": 20260808,
+            "decoding": "greedy",
+            "transformers": "4.57.6",
+            "torch": "2.11.0+cu128",
+            "bitsandbytes": "0.50.0"
+          },
+          "run": 1,
+          "ok": true,
+          "load_window": {
+            "n": 79,
+            "min_free_mib": 736,
+            "max_free_mib": 6795
+          },
+          "generate_window": {
+            "n": 70,
+            "min_free_mib": 672,
+            "max_free_mib": 1400
+          },
+          "n_samples": 168,
+          "peak_mib": 6059,
+          "peak_over_resident_mib": 130
+        },
+        {
+          "free_before_mib": 7501,
+          "free_after_load_mib": 1392,
+          "free_after_generate_mib": 692,
+          "total_mib": 8151,
+          "vram_source": "nvidia-smi",
+          "resident_mib": 6109,
+          "load_seconds": 17.4,
+          "generate_seconds": 13.2,
+          "torch": {
+            "max_allocated_mib": 5739,
+            "max_reserved_mib": 6050
+          },
+          "placement": {
+            "embed_device": "cpu",
+            "embed_dtype": "torch.float16",
+            "embed_mib": 1040
+          },
+          "text_sha256": "357abf7bae1264961e09a99ae49c69c838ce7195667b40411d057bf7b4080f8a",
+          "text_chars": 723,
+          "provenance": {
+            "model": "Qwen/Qwen2.5-7B-Instruct",
+            "revision": "main",
+            "quantisation": "nf4",
+            "dtype": "torch.float16",
+            "device": "cuda:0",
+            "embed_device": "cpu",
+            "compute_capability": "sm_120",
+            "max_new_tokens": 220,
+            "seed": 20260808,
+            "decoding": "greedy",
+            "transformers": "4.57.6",
+            "torch": "2.11.0+cu128",
+            "bitsandbytes": "0.50.0"
+          },
+          "run": 2,
+          "ok": true,
+          "load_window": {
+            "n": 84,
+            "min_free_mib": 1262,
+            "max_free_mib": 7501
+          },
+          "generate_window": {
+            "n": 65,
+            "min_free_mib": 692,
+            "max_free_mib": 1392
+          },
+          "n_samples": 167,
+          "peak_mib": 6239,
+          "peak_over_resident_mib": 130
+        },
+        {
+          "free_before_mib": 7423,
+          "free_after_load_mib": 1382,
+          "free_after_generate_mib": 678,
+          "total_mib": 8151,
+          "vram_source": "nvidia-smi",
+          "resident_mib": 6041,
+          "load_seconds": 15.8,
+          "generate_seconds": 13.3,
+          "torch": {
+            "max_allocated_mib": 5739,
+            "max_reserved_mib": 6050
+          },
+          "placement": {
+            "embed_device": "cpu",
+            "embed_dtype": "torch.float16",
+            "embed_mib": 1040
+          },
+          "text_sha256": "357abf7bae1264961e09a99ae49c69c838ce7195667b40411d057bf7b4080f8a",
+          "text_chars": 723,
+          "provenance": {
+            "model": "Qwen/Qwen2.5-7B-Instruct",
+            "revision": "main",
+            "quantisation": "nf4",
+            "dtype": "torch.float16",
+            "device": "cuda:0",
+            "embed_device": "cpu",
+            "compute_capability": "sm_120",
+            "max_new_tokens": 220,
+            "seed": 20260808,
+            "decoding": "greedy",
+            "transformers": "4.57.6",
+            "torch": "2.11.0+cu128",
+            "bitsandbytes": "0.50.0"
+          },
+          "run": 3,
+          "ok": true,
+          "load_window": {
+            "n": 76,
+            "min_free_mib": 1252,
+            "max_free_mib": 7423
+          },
+          "generate_window": {
+            "n": 65,
+            "min_free_mib": 678,
+            "max_free_mib": 1382
+          },
+          "n_samples": 159,
+          "peak_mib": 6171,
+          "peak_over_resident_mib": 130
+        }
+      ],
+      "suggested_gate_mib": 6419
+    },
+    "embed_cuda": {
+      "tag": "embed_cuda",
+      "embed_device": "cuda",
+      "model": "Qwen/Qwen2.5-7B-Instruct",
+      "quantisation": "nf4",
+      "n_ok": 3,
+      "n_failed": 0,
+      "peak_mib": {
+        "max": 6161,
+        "min": 6056,
+        "median": 6104,
+        "spread": 105
+      },
+      "resident_mib": {
+        "max": 6161,
+        "min": 6056,
+        "spread": 105
+      },
+      "text_sha256": [
+        "357abf7bae1264961e09a99ae49c69c838ce7195667b40411d057bf7b4080f8a"
+      ],
+      "deterministic": true,
+      "gate_now_mib": 6700,
+      "runs": [
+        {
+          "free_before_mib": 7033,
+          "free_after_load_mib": 977,
+          "free_after_generate_mib": 119,
+          "total_mib": 8151,
+          "vram_source": "nvidia-smi",
+          "resident_mib": 6056,
+          "load_seconds": 29.1,
+          "generate_seconds": 25.6,
+          "torch": {
+            "max_allocated_mib": 5739,
+            "max_reserved_mib": 6050
+          },
+          "placement": {
+            "embed_device": "cuda:0",
+            "embed_dtype": "torch.float16",
+            "embed_mib": 1040
+          },
+          "text_sha256": "357abf7bae1264961e09a99ae49c69c838ce7195667b40411d057bf7b4080f8a",
+          "text_chars": 723,
+          "provenance": {
+            "model": "Qwen/Qwen2.5-7B-Instruct",
+            "revision": "main",
+            "quantisation": "nf4",
+            "dtype": "torch.float16",
+            "device": "cuda:0",
+            "embed_device": "cuda:0",
+            "compute_capability": "sm_120",
+            "max_new_tokens": 220,
+            "seed": 20260808,
+            "decoding": "greedy",
+            "transformers": "4.57.6",
+            "torch": "2.11.0+cu128",
+            "bitsandbytes": "0.50.0"
+          },
+          "run": 1,
+          "ok": true,
+          "load_window": {
+            "n": 140,
+            "min_free_mib": 977,
+            "max_free_mib": 7118
+          },
+          "generate_window": {
+            "n": 123,
+            "min_free_mib": 94,
+            "max_free_mib": 976
+          },
+          "n_samples": 283,
+          "peak_mib": 6056,
+          "peak_over_resident_mib": 0
+        },
+        {
+          "free_before_mib": 7176,
+          "free_after_load_mib": 1072,
+          "free_after_generate_mib": 97,
+          "total_mib": 8151,
+          "vram_source": "nvidia-smi",
+          "resident_mib": 6104,
+          "load_seconds": 17.7,
+          "generate_seconds": 17.8,
+          "torch": {
+            "max_allocated_mib": 5739,
+            "max_reserved_mib": 6050
+          },
+          "placement": {
+            "embed_device": "cuda:0",
+            "embed_dtype": "torch.float16",
+            "embed_mib": 1040
+          },
+          "text_sha256": "357abf7bae1264961e09a99ae49c69c838ce7195667b40411d057bf7b4080f8a",
+          "text_chars": 723,
+          "provenance": {
+            "model": "Qwen/Qwen2.5-7B-Instruct",
+            "revision": "main",
+            "quantisation": "nf4",
+            "dtype": "torch.float16",
+            "device": "cuda:0",
+            "embed_device": "cuda:0",
+            "compute_capability": "sm_120",
+            "max_new_tokens": 220,
+            "seed": 20260808,
+            "decoding": "greedy",
+            "transformers": "4.57.6",
+            "torch": "2.11.0+cu128",
+            "bitsandbytes": "0.50.0"
+          },
+          "run": 2,
+          "ok": true,
+          "load_window": {
+            "n": 85,
+            "min_free_mib": 1072,
+            "max_free_mib": 7233
+          },
+          "generate_window": {
+            "n": 87,
+            "min_free_mib": 97,
+            "max_free_mib": 1062
+          },
+          "n_samples": 190,
+          "peak_mib": 6104,
+          "peak_over_resident_mib": 0
+        },
+        {
+          "free_before_mib": 7242,
+          "free_after_load_mib": 1081,
+          "free_after_generate_mib": 117,
+          "total_mib": 8151,
+          "vram_source": "nvidia-smi",
+          "resident_mib": 6161,
+          "load_seconds": 18.1,
+          "generate_seconds": 21.6,
+          "torch": {
+            "max_allocated_mib": 5739,
+            "max_reserved_mib": 6050
+          },
+          "placement": {
+            "embed_device": "cuda:0",
+            "embed_dtype": "torch.float16",
+            "embed_mib": 1040
+          },
+          "text_sha256": "357abf7bae1264961e09a99ae49c69c838ce7195667b40411d057bf7b4080f8a",
+          "text_chars": 723,
+          "provenance": {
+            "model": "Qwen/Qwen2.5-7B-Instruct",
+            "revision": "main",
+            "quantisation": "nf4",
+            "dtype": "torch.float16",
+            "device": "cuda:0",
+            "embed_device": "cuda:0",
+            "compute_capability": "sm_120",
+            "max_new_tokens": 220,
+            "seed": 20260808,
+            "decoding": "greedy",
+            "transformers": "4.57.6",
+            "torch": "2.11.0+cu128",
+            "bitsandbytes": "0.50.0"
+          },
+          "run": 3,
+          "ok": true,
+          "load_window": {
+            "n": 87,
+            "min_free_mib": 1081,
+            "max_free_mib": 7242
+          },
+          "generate_window": {
+            "n": 106,
+            "min_free_mib": 74,
+            "max_free_mib": 1081
+          },
+          "n_samples": 211,
+          "peak_mib": 6161,
+          "peak_over_resident_mib": 0
+        }
+      ],
+      "suggested_gate_mib": 6289
+    }
+  },
+  "peak_mib_all_runs": {
+    "values": [
+      6056,
+      6059,
+      6104,
+      6161,
+      6171,
+      6239
+    ],
+    "max": 6239,
+    "min": 6056,
+    "spread": 183,
+    "n": 6
+  },
+  "text_sha256": [
+    "357abf7bae1264961e09a99ae49c69c838ce7195667b40411d057bf7b4080f8a"
+  ],
+  "byte_identical_across_placements": true,
+  "gate": {
+    "was": 6700,
+    "now": 6420,
+    "rule": "max peak across all runs + observed spread",
+    "note": "lowest-that-loads, chosen 2026-09-07; sits below the 6561 that segfaulted once, so warm the explainer before a demo"
+  },
+  "embed_placement_finding": {
+    "torch_allocated_freed_mib": 1039,
+    "driver_returned_mib": 130,
+    "why": "a freed block inside a partially-used segment needs expandable_segments, which is a no-op on Windows; the remainder stays as reusable arena",
+    "free_after_generation_mib": {
+      "embed_cuda": [
+        119,
+        97,
+        117
+      ],
+      "embed_cpu": [
+        770,
+        692,
+        678
+      ]
+    },
+    "generate_seconds": {
+      "embed_cuda": [
+        25.6,
+        17.8,
+        21.6
+      ],
+      "embed_cpu": [
+        14.4,
+        13.2,
+        13.3
+      ]
+    }
+  }
+}

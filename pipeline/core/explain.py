@@ -211,8 +211,8 @@ def format_value(param: str, value, display: dict) -> str:
 # clinician can read all of it in one sitting -- which is a far stronger safety
 # argument than a violation count on a sample.
 #
-# What remains, stated rather than hidden: a verbatim statement can still be
-# INAPPLICABLE to this patient. That is a relevance failure, not a fabrication.
+# ⚠️ What remains: a verbatim statement can still be INAPPLICABLE to this
+# patient. That is a relevance failure, not a fabrication.
 # It is handled by keying actions on (band, parameter), by labelling the block
 # as general guideline context rather than patient-specific instruction, and by
 # the clinician-in-the-loop framing that is already the product's premise.
@@ -598,8 +598,7 @@ def explain(record: dict, policy: Policy, *, generator=None,
         # by code and need no model. They are withheld anyway, because
         # EXPLANATION_UNAVAILABLE_TEXT is a compliance string that bundles
         # recommendations with the LLM, and changing what a legal string covers
-        # is a product decision rather than a refactor. The architecture makes
-        # splitting them cheap if that decision is ever taken.
+        # is a product decision rather than a refactor.
         return {"status": GENERATOR_UNAVAILABLE, "text": policy.unavailable_text,
                 "generator": None, "reasons": [],
                 "guideline_context": [], "suggested_actions": []}

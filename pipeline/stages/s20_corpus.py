@@ -18,13 +18,9 @@ attached. That single fact sets every decision here:
 EXTRACTOR CHOICE -- MEASURED
 ----------------------------
 pypdfium2 for text, pdfplumber for typography, pypdf for structural metadata.
-All three were probed against all three PDFs on 2026-08-09 before being chosen;
-the reasoning and the numbers are in config.py beside the constants.
-
-The short version: pdfplumber tears subscripts onto their own line, turning
-"8 cmH2O" into "8 cmH O" + "2" and "assessment of Pplat" into "assessment of P"
-+ "plat". pdfium keeps them inline. Those are clinical parameter names inside
-the exact text that gets quoted, so it is a correctness difference.
+All three were probed against all three PDFs on 2026-08-09 before being chosen.
+The reasoning, the numbers and the three extraction defects corrected here are
+in config.py beside CORPUS_HYPHEN_DEFAULT_JOIN -- one copy, so they cannot drift.
 
 pdfplumber is still here for one thing it does better: per-character font names
 and sizes, which is how headings are found. The two extractors are aligned at

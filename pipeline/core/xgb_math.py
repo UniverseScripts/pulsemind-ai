@@ -1,17 +1,10 @@
 """The two XGBoost/logit primitives shared by fitting and by serving.
 
-WHY THIS FILE EXISTS
---------------------
-`scoring.py` is documented as pure and serving-importable, and it used to import
-`_logit` and `xgb_predict` from `s13_calibrate` -- a training stage. That made the
-serving path depend on the stage that fits the model, which is backwards: serving
-loads persisted artifacts and must not drag in Optuna, the bake-off, or a code
-path that can start training something.
-
-Both functions are here rather than in `scoring.py` because `s13_calibrate` needs
-them too, at fit time, and one definition is the point. `s13_calibrate` re-exports
-them, so `from ..stages.s13_calibrate import xgb_predict` keeps working for the callers
-that already do that.
+⚠️ These live here, not in `scoring.py`, because `s13_calibrate` needs them at
+fit time and one definition is the point -- and NOT in `s13_calibrate`, because
+serving would then import a training stage and drag in Optuna and the bake-off.
+`s13_calibrate` re-exports them, so `from ..stages.s13_calibrate import
+xgb_predict` keeps working.
 
 Nothing here reads config or touches disk.
 """

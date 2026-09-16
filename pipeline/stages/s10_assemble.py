@@ -74,12 +74,9 @@ def main(force: bool = False) -> None:
             f"{df['stay_id'].n_unique():,} admissions -- unchanged[/green]")
 
         # A LEFT join that matches nothing is still a successful LEFT join.
-        # Table 1 was built on the strict cohort while Table 2 used the final
-        # one, so 22.53% of rows carried NULL across all 33 static features and
-        # every existing assertion passed. Worse than missing data: the null
-        # pattern identified the cohort arm exactly, and the two arms have
-        # different label prevalence. Row counts were checked; whether the join
-        # MATCHED was not.
+        # Row counts were checked here; whether the join MATCHED was not, and
+        # 22.53% of rows once carried NULL across all 33 static features with
+        # every assertion passing. See `s02_table1_static.py`'s docstring.
         unmatched = df.filter(pl.col("gender").is_null()).height
         pct = 100 * unmatched / df.height
         if unmatched:

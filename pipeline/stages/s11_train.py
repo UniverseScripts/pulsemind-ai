@@ -272,7 +272,7 @@ def _checkpoint(algo: str, payload: dict) -> None:
     """Persist after EVERY algorithm.
 
     Writing results only at the end means a kill or a crash three hours in
-    throws away everything that already finished. Learned the hard way.
+    throws away everything that already finished.
     """
     results = json.loads(RESULTS_JSON.read_text()) if RESULTS_JSON.exists() else {}
     results.setdefault("phase_b", {})[algo] = payload

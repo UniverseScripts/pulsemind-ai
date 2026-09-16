@@ -12,11 +12,10 @@ materialised once, at build time, reviewed by a human, and frozen -- and
 inference becomes a dict lookup with zero VRAM, zero added latency and complete
 determinism, which is the same discipline s19 already follows for generation.
 
-That is not skipping retrieval. The literature-standard pipeline runs here, at
-build time, to PROPOSE the map; the review then ACCEPTS it. A small corpus turns
-a tuning problem into a review problem, which is a far better trade in a
-clinical setting: nobody can audit a cosine similarity, and anybody can read 57
-passages and say whether they belong.
+That is not skipping retrieval: the literature-standard pipeline runs here, at
+build time, to PROPOSE the map, and the review then ACCEPTS it. A small corpus
+turns a tuning problem into a review problem -- nobody can audit a cosine
+similarity, and anybody can read 57 passages and say whether they belong.
 
 TWO CHANNELS
 ------------

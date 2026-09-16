@@ -51,12 +51,9 @@ VIOLATION, WARNING = "violation", "warning"
 # risk, so "risk of deterioration" is the band's meaning and must never be
 # flagged; "has been deteriorating" is a claim about the past that nothing in
 # the record can support. Hence `deteriorat(ing|ed)` and not `deterioration`.
-# NOTE: `since admission` was here and has been REMOVED. `hours_admit_to_icu` is
-# a real static feature and a frequent top contributor, so "the hours since
-# admission to ICU" is a generator correctly quoting the record, not a claim
-# about a trajectory. The alternative earned nothing: every genuine case
-# ("deteriorating since admission", "falling since admission") is already caught
-# by the directional verb, which is the part that carries the claim.
+# ⚠️ Do NOT add `since admission`. `hours_admit_to_icu` is a real feature and a
+# frequent top contributor, so quoting it is correct; every genuine trend case
+# ("falling since admission") is already caught by the directional verb.
 _TREND = re.compile(
     r"\b(ris(ing|en)|rose|climb(ing|ed)|fall(ing|en)|fell|dropp(ing|ed)"
     r"|worsen(ing|ed)|improv(ing|ed|ement)|deteriorat(ing|ed)|escalat(ing|ed)"

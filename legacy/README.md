@@ -4,9 +4,9 @@ Everything in this directory predates the MIMIC-IV pipeline in [`../pipeline/`](
 It is kept because it is the reason the current work exists, not because it still runs.
 **Nothing here is on the current path. Do not extend it.**
 
-The serving stack (`../backend`, `../edge`, `../engine_fcp`, `../proxy`, `../certs`,
-`../docker-compose.yml`) deliberately stays at the repo root — it is still the only runnable
-end-to-end demo — but it consumes the artifacts stored here.
+The gRPC + nginx serving stack that used to sit at the repo root and consume these artifacts
+was deleted on 2026-09-08. It served an uninitialised model (defect 2 below) and read nothing
+from `models/`. The live serving path is `pulsemind_demo/`, in the workspace beside this repo.
 
 ---
 
@@ -38,8 +38,9 @@ rationales built from four hardcoded TP/FP/FN/TN paragraphs, formatted with Gemm
 `<start_of_turn>` tags. `train/train_lora.py` LoRA-tunes Qwen2-7B on it (r=16, alpha=32,
 `q_proj`/`v_proj`, `max_steps=100`, explicitly "short run for demo").
 
-The adapter shipped in `lora_adapters/clinical-lora/` is that demo artifact. It is mounted by
-the `vllm` service in `../docker-compose.yml`.
+The adapter shipped in `lora_adapters/clinical-lora/` is that demo artifact. It was mounted by
+the deleted `vllm` service; nothing loads it now. Its `checkpoint-50/` and `checkpoint-100/`
+were removed on 2026-09-08 as byte-identical duplicates of the final adapter.
 
 ### Generation 2 notebooks (`notebooks/`)
 
@@ -71,7 +72,7 @@ These are documented so nobody loses an afternoon to them:
    directory, the literal that would resolve is
    `data/old_training_data/waveform_data/P0{i}Waveform.xlsx`. Left unchanged deliberately:
    this generation is frozen, and an untested edit would misrepresent it as maintained.
-2. **The served model is random weights.** `../engine_fcp/server.py` defines a 6-input MLP
+2. **The served model was random weights.** `engine_fcp/server.py` defined a 6-input MLP
    (`feature_extractor.*`) but loads `bki_classifier_advanced_cnn.pt`, whose state dict is
    `conv_blocks.*` / `fc.*` — a 3-channel × 100-timestep 1D-CNN. `load_state_dict` raises, a
    bare `except` swallows it, and the service answers from an **uninitialised** network.
@@ -85,12 +86,12 @@ These are documented so nobody loses an afternoon to them:
 
 ## A note on `data/updated_cleaned_training_data/`
 
-Those files are per-patient extracts derived from **MIMIC-IV**, which is distributed under a
-PhysioNet Data Use Agreement and may not be redistributed. They remain on disk but are **no
-longer tracked** by git, and the path is in `../.gitignore`.
+Those files were per-patient extracts derived from **MIMIC-IV**, which is distributed under a
+PhysioNet Data Use Agreement and may not be redistributed. They were untracked (the path is in
+`../.gitignore`) and were **deleted from disk on 2026-09-16**; the folder no longer exists.
 
-Untracking stops further distribution; it does **not** remove them from existing history. If
-that matters for your use, that is a separate, deliberate history rewrite.
+Deleting them does **not** remove them from existing history. If that matters for your use,
+that is a separate, deliberate history rewrite.
 
 ---
 

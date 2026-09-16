@@ -54,9 +54,12 @@ def main() -> None:
         if ok:
             name = torch.cuda.get_device_name(0)
             cap = torch.cuda.get_device_capability(0)
-            free, total = torch.cuda.mem_get_info(0)
+            # Driver figures, not CUDA's -- torch over-reports free VRAM on this
+            # WDDM setup by gigabytes. See pipeline/core/generate.vram_status.
+            from pipeline.core.generate import vram_status
+            v = vram_status()
             log(f"[green]PyTorch  CUDA : OK[/green] {name} sm_{cap[0]}{cap[1]} | "
-                f"{free/1e9:.1f} GB free of {total/1e9:.1f} GB")
+                f"{v['free_mib']} MiB free of {v['total_mib']} ({v['source']})")
             t = torch.randn(4096, 4096, device="cuda")
             torch.cuda.synchronize()
             log(f"  matmul check: {float((t @ t).sum()):.1f}")

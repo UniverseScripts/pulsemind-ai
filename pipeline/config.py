@@ -1,7 +1,7 @@
 """Central configuration for the Pulsemind MIMIC-IV pipeline.
 
 Everything path-, code- and threshold-related lives here so no stage hardcodes
-a magic number. See the approved plan for the reasoning behind each choice.
+a magic number.
 """
 from __future__ import annotations
 
@@ -14,9 +14,11 @@ from pathlib import Path
 # This repo holds code and results. Everything large or credentialed lives in the
 # workspace beside it and is never committed:
 #
-#   <workspace>/data     MIMIC-IV 3.1 -- ~97 GB, PhysioNet DUA, not redistributable
-#   <workspace>/build    pipeline artifacts -- ~420 MB, regenerable
-#   <workspace>/models   fitted models -- ~152 MB, regenerable
+#   <workspace>/data     MIMIC-IV 3.1 -- 43 GB, PhysioNet DUA, not redistributable.
+#                        ⚠️ A PARTIAL extract: 11 of 31 tables since 2026-08-09.
+#   <workspace>/build    pipeline artifacts -- ~440 MB, regenerable
+#   <workspace>/models   fitted models ~210 MB, plus the 7B weights and the
+#                        MedCPT encoders -- 17 GB in total, all re-derivable
 #   <repo>/reports       measured results -- small, tracked, the deliverable
 #
 # Every root is environment-overridable, so a checkout can keep its data
@@ -34,10 +36,10 @@ MIMIC = DATA_ROOT / "mimic-iv-3.1"
 def mimic_csv(module: str, table: str) -> Path:
     """Resolve a MIMIC table to its CSV, tolerating the repeated-directory nesting.
 
-    Returns the expected path even when the file is absent, so that importing this
-    module never fails on a checkout without the 97 GB source tree -- the reports
-    and the code should be readable without it. Stages that actually read MIMIC
-    call `require_mimic()` first, which fails with a useful message.
+    Returns the expected path even when the file is absent, so importing this
+    module never fails on a checkout without the source tree -- the reports and
+    the code should be readable without it. Stages that actually read MIMIC call
+    `require_mimic()` first, which fails with a useful message.
     """
     base = MIMIC / module / f"{table}.csv"
     candidates = [
@@ -126,13 +128,9 @@ for _d in (BUILD, MANIFEST_DIR, REPORTS, MODELS, SCRATCH):
 # --------------------------------------------------------------------------
 # Report paths -- ONE definition each, named for the module that writes them.
 #
-# These used to be rebuilt as string literals wherever they were needed, and the
-# same path appeared in up to three modules: "bakeoff_results.json" lived in
-# s11_train, s12_baselines AND s13_calibrate. That is not merely untidy. s13's
-# tuned_params() falls back to XGB_FALLBACK when the file is missing, SILENTLY --
-# so a rename that updated the writer and missed one reader would train the next
-# model on default hyperparameters and log nothing. Same shape as the FP_*
-# defect that has shipped here twice: defining it is not wiring it up.
+# ⚠️ A rename that updates the writer and misses a reader is SILENT here: s13's
+# tuned_params() falls back to XGB_FALLBACK when the file is missing, so the next
+# model trains on default hyperparameters and logs nothing.
 #
 # The prefix is the producer, so `ls reports/` reads in pipeline order and an
 # unfamiliar file's origin is never a guess.
@@ -156,11 +154,12 @@ RPT_TOOL_ABLATION = REPORTS / "tool_method_ablation.json"
 RPT_TOOL_GATE_PIVOT = REPORTS / "tool_gate_pivot.json"
 RPT_TOOL_TARGETS = REPORTS / "tool_target_candidates.json"
 RPT_TOOL_CAUSAL_PARITY = REPORTS / "tool_causal_parity.json"
+RPT_TOOL_VRAM_PROBE = REPORTS / "tool_vram_probe.json"
 
 # --------------------------------------------------------------------------
-# Keep every temporary file on D:. The C: drive is tight (~13 GB), and a
+# Keep every temporary file on D:. C: and D: are partitions of one SSD and a
 # spilling DuckDB query or a CatBoost training directory can be many GB.
-# This must run before duckdb/matplotlib/numba/catboost are first used.
+# ⚠️ Must run before duckdb/matplotlib/numba/catboost are first used.
 # --------------------------------------------------------------------------
 for _var in ("TMPDIR", "TEMP", "TMP"):
     os.environ[_var] = str(SCRATCH)
@@ -328,16 +327,10 @@ def _flag(name: str, default: bool) -> bool:
 # --------------------------------------------------------------------------
 # Table 1 (static) -- see s02_table1_static.py
 #
-# S02_FINAL_COHORT: s02 used to build Table 1 from the STRICT cohort (31,969
-# admissions) while s05 onward used the FINAL cohort (39,394). s10 left-joins
-# them, so 7,423 admissions -- 946,390 rows, 22.53% of the model matrix --
-# carried NULL across all 33 static features, and no assertion noticed.
-#
-# That is worse than missing data. `gender IS NULL` was a bit-exact, 100%
-# accurate indicator of `cohort_source = 'evidence'`, a stratum whose label
-# prevalence differs sharply from the strict cohort's. The model had a free,
-# perfectly reliable cohort-membership feature. Building Table 1 on the final
-# cohort fills the block from the same source and removes the shortcut.
+# S02_FINAL_COHORT: build Table 1 on the FINAL cohort (39,394 admissions), not
+# the strict one (31,969). ⚠️ Turning this off reinstates a measured leak --
+# 946,390 rows with all 33 static features NULL, a null pattern that identifies
+# the cohort arm exactly. Full account in `s02_table1_static.py`'s docstring.
 #
 # CHARLSON_HIERARCHY: standard Charlson counts only the higher member of each
 # graded pair (mild/severe liver, uncomplicated/complicated diabetes,
@@ -367,8 +360,8 @@ ENABLE_PBW = _flag("PM_ENABLE_PBW", True)
 # --------------------------------------------------------------------------
 # Modelling
 #
-# THE TARGET IS NO LONGER `warning`. The group approved the switch to composite
-# deterioration; see the forward-targets block below for the label itself.
+# The target is `y_resp_6h` -- the respiratory arm of composite deterioration at
+# a 6 h look-ahead. See the forward-targets block below for the label itself.
 #
 # `warning` is still built and still lands in the model matrix, because
 # verify.py diffs it against the BigQuery export to prove the extract is
@@ -451,9 +444,9 @@ D_PREVALENCE_BOUNDS = (0.005, 0.35)
 # Calibration (stage 13)
 #
 # AP and ROC-AUC measure RANK and are invariant under any monotone rescaling of
-# the score. The product does not consume a rank -- bki/backend/main.py applies
-# `risk_prob > 0.70`, which is a test on the LEVEL. Stage 13 measures the level
-# and fits the map that makes it mean something.
+# the score. The product does not consume a rank -- a screen applies a threshold
+# to `risk_prob`, which is a test on the LEVEL. Stage 13 measures the level and
+# fits the map that makes it mean something.
 #
 # Two folds are carved out of the training patients. Fold 3 drives early
 # stopping; fold 4 fits the calibrator. Neither is ever the test set: fitting a
@@ -492,15 +485,11 @@ OPERATING_POINT_JSON = MODELS / f"operating_point_{TARGET}.json"
 # it; adding a field is cheap. These names are final.
 # --------------------------------------------------------------------------
 BAND_NAMES = ("LOW", "MEDIUM", "HIGH", "CRITICAL")
-# 1.1.0 -- `contributors` went from a reserved slot to a specified field when
-# s17_records began emitting it. Additive, so a minor bump.
-# 1.2.0 -- `imputed_share`, `attribution_age_min` and `attribution_total` added,
-# so a consumer can decide whether a reading is fit to explain at all. The two
-# shares are taken over the same denominator as `documentation_share` on
-# disjoint feature sets; `attribution_total` IS that denominator, so a consumer
-# holding only the top-8 can still express one contributor as a share of the
-# whole decision. All three need the full 110-column contribution matrix, which
-# exists only inside s17.
+# `imputed_share` and `documentation_share` are taken over one denominator on
+# disjoint feature sets, and `attribution_total` IS that denominator -- so a
+# consumer holding only the top-8 contributors can still express one as a share
+# of the whole decision. All three need the full 110-column contribution matrix,
+# which exists only inside s17.
 RISK_SCHEMA_VERSION = "1.2.0"
 BAND_TABLE_JSON = MODELS / f"risk_bands_{TARGET}.json"
 
@@ -596,14 +585,35 @@ EXPLAIN_MUTATION_SAMPLE = 200  # records the adversarial self-check runs over
 # not a preference.
 #
 # Qwen2.5-7B-Instruct is Apache-2.0 and ungated: no HF token, no licence click.
-# Llama-3.1-8B-Instruct is gated and would add an auth step for no measured
-# gain. NF4 puts a 7B in ~4.5 GB against 7.4 GB free; `none` is the fp16
-# fallback for a 3B if quantisation ever stops working on this card.
+# NF4 puts a 7B in ~4.5 GB of weights against the ~6.5 GB this card can offer;
+# `none` is the fp16 fallback for a 3B if quantisation ever stops working here.
 # --------------------------------------------------------------------------
 LLM_MODEL_ID = os.getenv("PM_LLM_MODEL", "Qwen/Qwen2.5-7B-Instruct")
 LLM_REVISION = os.getenv("PM_LLM_REVISION", "main")
 LLM_QUANT = os.getenv("PM_LLM_QUANT", "nf4")          # nf4 | none
 LLM_PREFLIGHT_MODEL = "Qwen/Qwen2.5-0.5B-Instruct"    # ~350 MB toolchain probe
+# WHERE THE EMBEDDING TABLE LIVES ONCE LOADED. `cpu` buys ~600 MiB of headroom
+# during generation and makes it 37% faster (14.4/13.2/13.3 s against
+# 25.6/17.8/21.6 s), at byte-identical output.
+#
+# ⚠️ It does NOT move the load PEAK, so it cannot lower LLM_MIN_FREE_VRAM_MIB:
+# the table is on the card while `from_pretrained` runs, whatever happens to it
+# afterwards. And ⚠️ the driver returns only 130 MiB of the 1039 MiB freed, so
+# reading right after the load says "not worth it" -- that is the wrong place to
+# read. Mechanism, the arena that explains the gap, and the `model.device` trap
+# it sets: `core/generate.py:_host_embedding`.
+LLM_EMBED_DEVICE = os.getenv("PM_LLM_EMBED_DEVICE", "cpu")   # cpu | cuda
+#: Free VRAM the 7B needs, from the DRIVER, before a load may start. ONE
+#: definition, two readers: `s19_generate`'s capability check and the demo
+#: service's `explanation.generator()`. ⚠️ Never let a second copy exist -- two
+#: independently-declared gates drift, and each passes its own check while doing so.
+#:
+#: MEASURED, not bracketed. `tools/vram_probe.py` samples the driver at 5 Hz
+#: across the load; three consecutive runs peaked at 6059, 6171 and 6239 MiB,
+#: spread 180. 6420 = max peak + spread. The full table, the accepted risk and
+#: the reason the peak does not move with LLM_EMBED_DEVICE are on
+#: `MIN_FREE_VRAM_MIB` in `pulsemind_demo/back-end/pythonService/explanation.py`.
+LLM_MIN_FREE_VRAM_MIB = 6420
 LLM_MAX_NEW_TOKENS = 220
 # Greedy, fixed seed. Non-determinism would make a prompt change unattributable,
 # and attributing changes is the entire purpose of the grounding checker.
@@ -682,10 +692,8 @@ CORPUS_DOCS: dict[str, dict[str, str]] = {
 #     AARC "assessment of P" + "plat". pypdfium2 returns "cmH2O" and "Pplat".
 #     Those are clinical parameter names inside the text that gets quoted
 #     verbatim, so this is a correctness difference, not a tidiness one.
-#   * Docling resolves cleanly against the cu128 pins but wants 58 packages
-#     (torchvision, opencv, rapidocr, tree-sitter) and a typer downgrade for a
-#     63-page corpus, and a layout model that reflows text is a liability when
-#     the design rests on byte-identical quoting.
+#   * ⚠️ Any extractor with a layout model that REFLOWS text is disqualified
+#     here, however good it is: the design rests on byte-identical quoting.
 #
 # Three extraction defects were measured and are corrected in s20:
 #   * U+00BC is a mis-mapped '=' in the AARC subset font ("VT ¼ tidal volume",

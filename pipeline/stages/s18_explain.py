@@ -15,10 +15,9 @@ explain.baseline() renders a grounded sentence from the payload. It exists to be
 the thing a generated explanation has to beat, and to exercise the checker. It is
 NOT what gets served when a generator is down: that path returns
 EXPLANATION_UNAVAILABLE_TEXT, because fluent clinical prose in a slot meant to
-signal absence defeats the purpose of the slot. Worth stating plainly -- this
-project has already shipped a template as an explanation once
-(legacy/lora_adapters/, a LoRA tuned on four hardcoded paragraphs over seven
-patients, still mounted by docker-compose.yml).
+signal absence defeats the purpose of the slot. This project has already shipped
+a template as an explanation once -- legacy/lora_adapters/, a LoRA tuned on four
+hardcoded paragraphs over seven patients.
 
 WHY THE MUTATION SUITE EXISTS
 -----------------------------
